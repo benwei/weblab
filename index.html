@@ -1,0 +1,30 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>test custom HTML element</title>
+	</head>
+	<body>
+		<div>
+		<x-foo-from-template></x-foo-from-template>
+		</div>
+		<template id="sdtemplate">
+			<style>
+p { color: orange; }
+			</style>
+			<p>I'm in Shadow DOM. My markup was stamped from a &lt;template&gt;.</p>
+		</template>
+
+		<script>
+			var proto = Object.create(HTMLElement.prototype, {
+				createdCallback: {
+					value: function() {
+						var t = document.querySelector('#sdtemplate');
+						var clone = document.importNode(t.content, true);
+						this.createShadowRoot().appendChild(clone);
+					}
+				}
+			});
+document.registerElement('x-foo-from-template', {prototype: proto});
+		</script>
+	</body>
+</html>

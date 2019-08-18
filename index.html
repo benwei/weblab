@@ -3,28 +3,60 @@
 		<meta charset="utf-8">
 		<title>test custom HTML element</title>
 	</head>
-	<body>
-		<div>
+<body>
+	<div>
+		<h2>Test Element A</h2>
 		<x-foo-from-template></x-foo-from-template>
-		</div>
-		<template id="sdtemplate">
-			<style>
-p { color: orange; }
-			</style>
-			<p>I'm in Shadow DOM. My markup was stamped from a &lt;template&gt;.</p>
+	</div>
+	<div>
+		<h2>Test Element B</h2>
+		<x-foo-from-template></x-foo-from-template>
+	</div>
+	<template id="sdtemplate">
+		<p>I'm in Shadow DOM. My markup was stamped from a &lt;template&gt;.</p>
+		<app-panel>
+			<li is="x-item">Do</li>
+			<li is="x-item">Re</li>
+			<li is="x-item">Mi</li>
+		</app-panel>
 		</template>
+		<style>
+			app-panel {
+				display: flex;
+			}
 
+			[is="x-item"] {
+				transition: opacity 400ms ease-in-out;
+				opacity: 0.3;
+				flex: 1;
+				text-align: center;
+				border-radius: 50%;
+			}
+
+			[is="x-item"]:hover {
+				opacity: 1.0;
+				background: rgb(255, 0, 255);
+				color: white;
+			}
+
+			app-panel>[is="x-item"] {
+				padding: 5px;
+				list-style: none;
+				margin: 0 7px;
+			}
+		</style>
 		<script>
-			var proto = Object.create(HTMLElement.prototype, {
-				createdCallback: {
-					value: function() {
-						var t = document.querySelector('#sdtemplate');
-						var clone = document.importNode(t.content, true);
-						this.createShadowRoot().appendChild(clone);
-					}
+			customElements.define('x-foo-from-template', class extends HTMLElement {
+				constructor() {
+					super();
+
+					var t = document.querySelector('#sdtemplate');
+					const shadowRoot = this.attachShadow({ mode: 'open' });
+					var clone = document.importNode(t.content, true);
+					shadowRoot.appendChild(clone);
 				}
 			});
-document.registerElement('x-foo-from-template', {prototype: proto});
 		</script>
-	</body>
-</html>
+		</body>
+
+		</html>
